@@ -1,0 +1,15 @@
+{
+  "name": "hook-invaders",
+  "version": "0.0.1",
+  "description": "Space Invaders clone using React Hooks and Canvas",
+  "author": "S Thobi Sinaga <s.thobi.sinaga@gmail.com>",
+  "scripts": {
+    "dev": "next",
+    "build": "next build && next export -o dist"
+  },
+  "dependencies": {
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest"
+  }
+}
