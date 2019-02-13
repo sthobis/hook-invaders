@@ -1,7 +1,6 @@
 {
   "version": 2,
-  "name": "nextjs-static",
-  "builds": [
-  	{ "src": "package.json", "use": "@now/static-build" }
-  ]
+  "name": "hook-invaders",
+  "alias": "hookinvaders",
+  "builds": [{ "src": "package.json", "use": "@now/static-build" }]
 }

@@ -5,7 +5,7 @@
   "author": "S Thobi Sinaga <s.thobi.sinaga@gmail.com>",
   "scripts": {
     "dev": "next",
-    "build": "next build && next export -o dist"
+    "now-build": "next build && next export -o dist"
   },
   "dependencies": {
     "next": "latest",
