@@ -85,16 +85,19 @@ const useInterval = (callback, delay) => {
 const Canvas = () => {
   const canvasRef = useRef();
 
+  const [isPaused, setIsPaused] = useState(true);
   const mouse = useMousePosition(canvasRef);
 
   const [shipCoordinate, setShipCoordinate] = useState(OUT_OF_MAP);
   useEffect(
     () => {
-      const x = Math.floor(mouse.x / CANVAS_DIMENSION);
-      const y = Math.floor(mouse.y / CANVAS_DIMENSION);
-      setShipCoordinate({ x, y });
+      if (!isPaused) {
+        const x = Math.floor(mouse.x / CANVAS_DIMENSION);
+        const y = Math.floor(mouse.y / CANVAS_DIMENSION);
+        setShipCoordinate({ x, y });
+      }
     },
-    [mouse]
+    [isPaused, mouse]
   );
 
   const [bulletCoordinate, setBulletCoordinate] = useState(OUT_OF_MAP);
@@ -116,18 +119,21 @@ const Canvas = () => {
         }));
       }
     },
-    isShooting ? 100 : null
+    !isPaused && isShooting ? 100 : null
   );
 
   const [enemyCoordinate, setEnemyCoordinate] = useState(OUT_OF_MAP);
   const [isEnemyAlive, setIsEnemyAlive] = useState(false);
-  useInterval(() => {
-    setEnemyCoordinate({
-      x: Math.floor(Math.random() * CANVAS_DIMENSION),
-      y: 0
-    });
-    setIsEnemyAlive(true);
-  }, 2200);
+  useInterval(
+    () => {
+      setEnemyCoordinate({
+        x: Math.floor(Math.random() * CANVAS_DIMENSION),
+        y: 0
+      });
+      setIsEnemyAlive(true);
+    },
+    !isPaused ? 2200 : null
+  );
   useInterval(
     () => {
       if (enemyCoordinate.y === CANVAS_DIMENSION) {
@@ -141,7 +147,7 @@ const Canvas = () => {
         }));
       }
     },
-    isEnemyAlive ? 100 : null
+    !isPaused && isEnemyAlive ? 100 : null
   );
 
   const [score, setScore] = useState(0);
@@ -212,27 +218,49 @@ const Canvas = () => {
   };
 
   return (
-    <div className="canvas-container">
+    <main>
       <p>
         Hook Invaders
         <br />
         <a href="https://github.com/sthobis/hook-invaders">source</a>
       </p>
-      <canvas
-        ref={canvasRef}
-        width={CANVAS_SIZE}
-        height={CANVAS_SIZE}
-        onClick={shootBullet}
-      />
+      <div
+        className="container"
+        onMouseEnter={() => setIsPaused(false)}
+        onMouseLeave={() => setIsPaused(true)}
+      >
+        <canvas
+          ref={canvasRef}
+          width={CANVAS_SIZE}
+          height={CANVAS_SIZE}
+          onClick={shootBullet}
+        />
+        {isPaused && (
+          <div className="pause-overlay">
+            <p>paused</p>
+          </div>
+        )}
+      </div>
       <p>score: {score}</p>
       <style jsx>{`
-        .canvas-container {
+        main {
           display: flex;
           flex-direction: column;
           justify-content: center;
           align-items: center;
           width: 100vw;
           height: 100vh;
+        }
+
+        p {
+          font-family: monospace;
+          font-size: 14px;
+          text-align: center;
+        }
+
+        .container {
+          display: inline-block;
+          position: relative;
         }
 
         canvas {
@@ -243,10 +271,17 @@ const Canvas = () => {
           cursor: none;
         }
 
-        p {
-          font-family: monospace;
-          font-size: 14px;
-          text-align: center;
+        .pause-overlay {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(255, 255, 255, 0.2);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          color: #fff;
         }
       `}</style>
       <style jsx global>{`
@@ -255,7 +290,7 @@ const Canvas = () => {
           box-sizing: border-box;
         }
       `}</style>
-    </div>
+    </main>
   );
 };
 
